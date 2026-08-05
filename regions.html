@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ภูมิภาค - เช็คลิสต์ Pokémon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image: url('https://assets.pokemon.com/static2/_ui/img/chrome/container_bg.png');
+            font-family: 'Prompt', sans-serif;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        nav {
+            background-color: #ee1515;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: #cc0000;
+        }
+        
+        h1 {
+            color: #3466af;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #3466af;
+            border-bottom: 2px solid #ffcb05;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+        
+        /* เพิ่ม CSS สำหรับปรับแต่งช่องติ๊กถูก */
+        .pokemon-checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #e74c3c;
+            vertical-align: middle;
+        }
+        
+        .pokemon-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .pokemon-item:hover {
+            background-color: #f7f7f7;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pokemon-item label {
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        
+        .pokemon-img {
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+        }
+        
+        /* ปรับปรุงรูปแบบเมื่อเลือกช่องติ๊กถูก */
+        .pokemon-checkbox:checked + label {
+            font-weight: bold;
+            color: #3466af;
+        }
+        
+        .pokemon-item.caught {
+            background-color: #e8f4ff;
+            border-color: #3466af;
+        }
+        
+        .region-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .region-selector select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #3466af;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: white;
+            min-width: 200px;
+        }
+        
+        .region-selector select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 102, 175, 0.3);
+        }
+        
+        .region-actions {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .action-toggle {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background-color: #3466af;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s, background-color 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            background-color: #2a549a;
+        }
+        
+        .check-btn {
+            background-color: #4caf50;
+        }
+        
+        .check-btn:hover {
+            background-color: #3d8b40;
+        }
+        
+        .uncheck-btn {
+            background-color: #ff9800;
+        }
+        
+        .uncheck-btn:hover {
+            background-color: #e68900;
+        }
+        
+        .reset-btn {
+            background-color: #f44336;
+        }
+        
+        .reset-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        
+        .region-header {
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px solid #3466af;
+            position: relative;
+        }
+        
+        .region-header h2 {
+            margin-top: 10px;
+            border-bottom: none;
+            font-size: 2.2em;
+        }
+        
+        .pokemon-list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        /* โลโก้โปเกมอน */
+        .pokemon-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .pokemon-logo img {
+            max-width: 250px;
+            height: auto;
+        }
+        
+        /* เพิ่มไอคอนโปเกบอล */
+        .pokeball-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+	    /* CSS สำหรับปุ่มกลับไปบนสุด */
+#backToTopBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 80px;
+    height: 80px;
+    background-color: #3466af;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: none; /* ซ่อนปุ่มก่อน */
+    transition: all 0.3s ease;
+    z-index: 1000;
+    /* เพิ่มขอบเพื่อให้ดูโดดเด่นขึ้น */
+    border: 2px solid #ffcb05;
+}
+
+#backToTopBtn:hover {
+    background-color: #ffcb05;
+    color: #3466af;
+    transform: translateY(-5px);
+}
+
+    </style>
+</head>
+<script>
+// JavaScript สำหรับปุ่มกลับไปบนสุด
+document.addEventListener("DOMContentLoaded", function() {
+    // เลือกปุ่ม back to top
+    const backToTopBtn = document.getElementById("backToTopBtn");
+    
+    // ตรวจสอบว่าปุ่มถูกสร้างขึ้นในหน้าเว็บหรือไม่
+    if (backToTopBtn) {
+        // แสดงปุ่มเมื่อเลื่อนลงมามากกว่า 300px
+        window.addEventListener("scroll", function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.style.display = "block";
+                
+                // เพิ่ม animation เล็กน้อยเมื่อปุ่มปรากฏ
+                setTimeout(() => {
+                    backToTopBtn.style.opacity = "1";
+                }, 10);
+            } else {
+                backToTopBtn.style.opacity = "0";
+                
+                // ซ่อนปุ่มหลังจาก animation เสร็จสิ้น
+                setTimeout(() => {
+                    backToTopBtn.style.display = "none";
+                }, 300);
+            }
+        });
+        
+        // เมื่อคลิกที่ปุ่ม ให้เลื่อนกลับไปด้านบนของหน้าเว็บ
+        backToTopBtn.addEventListener("click", function() {
+            // เลื่อนไปด้านบนอย่างนุ่มนวล
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    }
+});
+</script>
+
+<body>
+<!-- HTML สำหรับปุ่มกลับไปบนสุด -->
+<button id="backToTopBtn" title="กลับไปบนสุด">
+    <i class="arrow-up"><img src="BT.png" alt="Pokéball" style="width: 75px; vertical-align: middle; margin-right: 10px;"></i>
+</button>
+
+    <nav>
+        <div class="nav-logo">
+            <!--<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">-->
+        </div>
+        <div class="nav-links">
+            <a href="index.html">หน้าหลัก</a>
+            <a href="regions.html">ภูมิภาค</a>
+            <a href="about.html">เกี่ยวกับ</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="pokemon-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2560px-International_Pok%C3%A9mon_logo.svg.png" alt="Pokémon Logo">
+        </div>
+        
+        <h1>เช็คลิสต์ Pokémon ตามภูมิภาค</h1>
+        
+        <div class="region-selector">
+            <select id="regionSelect">
+                <option value="">-- เลือกภูมิภาค --</option>
+                <option value="kanto">คันโต</option>
+                <option value="johto">โจโต</option>
+                <option value="hoenn">โฮเอ็น</option>
+                <option value="sinnoh">ชินโอ</option>
+                <option value="unova">ยูโนวา</option>
+                <option value="kalos">คาลอส</option>
+                <option value="alola">อโลลา</option>
+                <option value="galar">กาลาร์</option>
+                <option value="paldea">พัลเดีย</option>
+            </select>
+            <button id="resetRegionBtn" class="action-btn reset-btn">
+                <span class="icon">🗑️</span> รีเซตภูมิภาคนี้
+            </button>
+        </div>
+        
+        <div class="region-content">
+            <div id="regionHeader" class="region-header" style="display: none;">
+                <h2 id="regionTitle"></h2>
+                <div class="progress-bar">
+                    <div class="progress" id="regionProgress" style="width: 0%"></div>
+                </div>
+                <p id="pokemonCount" style="font-size: 1.2em; margin-top: 10px; font-weight: bold;">จับได้แล้ว 0 ตัว</p>
+            </div>
+            
+            <div class="region-actions" id="regionActions" style="display: none;">
+                <div class="action-toggle">
+                    <button id="checkAllBtn" class="action-btn check-btn">
+                        <span class="icon">✓</span> เลือกทั้งหมด
+                    </button>
+                    <button id="uncheckAllBtn" class="action-btn uncheck-btn">
+                        <span class="icon">✗</span> ยกเลิกทั้งหมด
+                    </button>
+                </div>
+            </div>
+            
+            <div id="pokemonList" class="pokemon-list-container"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const pokemonData = JSON.parse(localStorage.getItem("pokemonData")) || {
+                kanto: { total: 151, caught: 0 },
+                johto: { total: 100, caught: 0 },
+                hoenn: { total: 135, caught: 0 },
+                sinnoh: { total: 107, caught: 0 },
+                unova: { total: 156, caught: 0 },
+                kalos: { total: 72, caught: 0 },
+                alola: { total: 88, caught: 0 },
+                galar: { total: 96, caught: 0 },
+                paldea: { total: 120, caught: 0 }
+            };
+
+            // ชื่อภูมิภาคในภาษาไทย
+            const regionNames = {
+                kanto: "คันโต",
+                johto: "โจโต",
+                hoenn: "โฮเอ็น",
+                sinnoh: "ชินโอ",
+                unova: "ยูโนวา",
+                kalos: "คาลอส",
+                alola: "อโลลา",
+                galar: "กาลาร์",
+                paldea: "พัลเดีย"
+            };
+
+            // ชื่อโปเกมอนตามภูมิภาค
+            const pokemonNames = {
+                kanto: ['ฟูชิกิดาเนะ','ฟูชิกิโซ','ฟูชิกิบานะ','ฮิโตคาเงะ','ลิซาร์โดะ','ลิซาร์ดอน','เซนิกาเมะ','คาเมล','คาเม็กซ์',
+'คาเตอร์ปี','ทรานเซล','บัตเตอร์ฟรี','บีเดิล','โคคูน','สเปียร์','ป็อปโปะ','พีเจียน','พีเจียต','โครัตตา','รัตตา',
+'โอนิสึซึเมะ','โอนิดริล','อาร์โบ','อาร์บ็อก','พิคาชู','ไรชู','แซนด์','แซนด์แพน','นิโดรัน♀','นิโดรินา','นิโดควีน',
+'นิโดรัน♂','นิโดริโน','นิโดคิง','ปิปปี','ปิคซี','โรคอน','คิวคอน','พูริน','พูคูริน','ซูแบท','โกลแบท','นาโซโนะคุสะ',
+'คุไซฮานะ','รัฟเฟรเซีย','พารัส','พาราเซ็คท์','คองปัง','มอร์ฟอน','ดิกดา','ดักทริโอ','เนียส','เปอร์เซียน','โคดัก',
+'โกลดัก','แมนคี','โอโคริซารุ','การ์ดี','วินดี','เนียวโรโมะ','เนียวโรโซ','เนียวโรบอน','เคซี','ยุนเกเรอร์','ฟูดิน',
+'วันริกี','โกริกี','ไคริกี','มาดาซึโบมิ','อุซึดง','อุซึบ็อท','เมโนคุราเกะ','โดคุคุราเกะ','อิชิซึบูเตะ','โกโลน',
+'โกโลเนีย','โพนีตะ','แกลล็อป','ยาดง','ยาโดรัน','คอยล์','แรคอยล์','คาโมเนกิ','โดโด','โดโดริโอ','เพาเวา','จูกอน',
+'เบโตเบตา','เบโตเบตัน','เชลเดอร์','พาร์เชน','โกส','โกสท์','เก็งกา','อิวาร์ค','สลีป','สลีปเปอร์','แครบ','คิงเกลอร์',
+'บิริริดามา','มารุมายน์','ทามะทามะ','นัชชี','คาระคาระ','การะการะ','ซาวามูลาร์','เอบิวาลาร์','เบโรรินกา','โดกาซ',
+'มาตาโดกัซ','ไซฮอร์น','ไซดอน','ลัคกี','มอนจารา','การูรา','ทัททู','ซีดรา','โทซาคินโตะ','อซึมาโอ','ฮิโตเดมัน',
+'สตาร์มี','บาร์เรียด','สไตรค์','รูจูลา','เอเลบู','บูเบอร์','ไคลอส','เคนเทารอส','คอยคิง','เกียราดอส','ลาพลาซ',
+'เมตามอน','อีวุย','ชาวเวอร์ส','ธันเดอร์ส','บูสเตอร์','โพรีกอน','ออมไนต์','ออมสตาร์','คาบูโตะ','คาบูท็อปส์',
+'พเทอรา','คาบิกอน','ฟรีเซอร์','ธันเดอร์','ไฟเยอร์','มินิริว','ฮาคุริว','ไคริว','มิวทู','มิว'],
+
+                johto: ['จิโคริตา','เบย์ลีฟ','เมกาเนียม','ฮิโนอาราชิ','แม็กมาราชิ','บาคุฟูน','วานิโนโกะ','อัลลิเกต','ออไดล์',
+'โอทาจิ','โอโอทาจิ','โฮโฮ','โยรุโนะซึคุ','เรดิบา','เรเดียน','อิโตมารุ','อาริอาโดส','โครแบท','ชอนชี',
+'แลนเทอร์น','พิชู','ปี','พูพูริน','โทเกปี','โทเกชิก','เนที','เนทิโอ','เมรีป','โมโคโค','เด็นริว','คิเรอิฮานะ',
+'มาริล','มาริลลิ','อุซกกี','เนียวโรโทโนะ','ฮาเน็กโกะ','โพพ็อกโกะ','วาทักโกะ','เอย์แพม','ฮิมานัทส์',
+'คิวามาริ','ยันมา','อูปา','นูโอ','เอฟี','แบล็คกี','ยามิคาราซึ','ยาโดคิง','มูมา','อันโนน','โซนานส์',
+'คิรินริกิ','คุนุกิดามะ','ฟอเรทอส','โนก็อจจิ','ไกลกา','ฮากาเนล','บูล','แกรนบูล','ฮารีเซน','ฮัซซัม',
+'สึโบสึโบะ','เฮราครอส','นิวลา','ฮิเมกุมะ','ริงกุมะ','มักแม็ก','มักคาร์โก','อุริมู','อิโนมู','ซันนีโก',
+'เทปโปโอ','ออคตัน','เดลิเบิร์ด','แมนไทน์','แอร์มุโด','เดลวิล','เฮลการ์','คิงดรา','โกมาโซ','ดอนแฟน',
+'โพรีกอน2','โอโดชิชิ','โดเบิล','บัลกี','คาโพเอลาร์','มุจูล','เอเลคิด','บูบี','มิลแทงค์','แฮปปีนาส',
+'ไรโค','เอ็นเต','ซุยคูน','โยกิรัส','ซานากิรัส','บันกิรัส','ลูเกีย','โฮโอ','เซเลบี'],
+
+                hoenn: ['คิโมริ','จุปไทล์','จูไคน์','อาชาโม','วาคาชาโม','บาชาโม','มิซึโกโร่','นูมาโคร','ลากลาจ','โปชิเอนา',
+'กราเอนา','จิกุซากุมะ','มัสสึกุมะ','เคมุตโสะ','คาราซาลิส','อาเกฮันท์','มายูลด์','โดคุเคล','ฮาซึโบ',
+'ฮาซึเบรโร','รุนปัปปา','ทาเนโบ','โคโนฮานะ','ดาเทนกุ','สึบาเมะ','โอโอสึบาเมะ','คาโมเมะ','เพลิปเปอร์',
+'ราลทซ์','เคอเรีย','เซอไนท์','อาเมทามะ','อาเมมอธ','คิโนโคโค','คิโนกัซซา','นามาเคโร','ยารุคิโมโนะ',
+'เค็คคิง','สึจินิน','เท็คคานิน','นูเคนิน','โกเนียวเนียว','โดกอม','บาคุองก์','มาคุโนชิตะ','ฮาริเทยามะ',
+'รูริริ','โนซพาส','เอเนโค','เอเนโคโรโระ','ยามิรามิ','คูชีท','โคโคโดรา','โคโดรา','บอสโกโดรา',
+'อาซานัน','ชาเรม','ราคุไร','ไลโวลต์','พราเซิล','ไมนัน','บารูบีท','อิลูมิเซะ','โรเซเลีย','โกคูลิน',
+'มารุโนม','คิบาเนีย','ซาเมฮาเดอร์','เวลโกะ','เวลโอ','ดอนเมล','บาคูดา','โคทอยซ์','บาเนบู','บูพิก',
+'พัทชีล','นัคครา','วิบราวา','ฟลายกอน','ซาโบเนีย','น็อคทัส','ทิลท์โท','ทิลทาลิส','แซงค์กูส','ฮาบูเนค',
+'ลูนาโทน','โซลร็อก','โดโจทช์','นามาซูน','เฮกานิ','ชิซาริเกอร์','ยาจิลอน','เนนดอลล์','ลิลีลา',
+'ยูเรเดิล','อน็อปธ์','อามัลโด','ฮินบาส','มิโลคารอส','โปวาลุน','คาคุเลียน','คาเงะโบสึ','จุปเป็ตตะ',
+'โยมาวารุ','ซามาโยรุ','โทรพิอุส','ชิรีน','แอบโซล','โซนาโนะ','ยูกิวาราชิ','โอนิโกริ','ทามาซาราชิ',
+'โทดอกเกลอร์','โทโดเซรุกา','ปาลูลุ','ฮันเทล','ซาคุราบิส','จีแลนซ์','เลิฟคัส','ทัทซึเบ','โคโมรู',
+'โบมันเดอร์','ดันบัล','เมแทงก์','เมทากรอส','เรจิร็อก','เรจิไอซ์','เรจิสตีล','ลาทิอาส','ลาทิโอส',
+'ไคออกา','กราดอน','เร็คควอซา','จิราชิ','ดีอ็อกซิส'],
+
+                sinnoh: ['นาเอเทิล','ฮายาชิกาเมะ','โดไดโทส','ฮิโกซารุ','โมคาซารุ','โกคาซารุ','พจจามะ','โพจไทชิ','เอ็มเพลท์',
+'มุคคูรุ','มุคูเบิร์ด','มุคูฮอว์ก','บิปปา','บีดารุ','โคโรโบชิ','โคโรท็อก','โคลิงก์','ลุคซิโอ','เร็นโทรา',
+'ซึโบมี','โรสเรด','ซึไกโดส','แรมพาร์ด','ทาเทท็อปส์','โทริเด็ปส์','มิโนมุจจิ','มิโนมาดาม','กาเมล',
+'มิทซึฮันนี','บีควิน','พาจิริซึ','บุยเซล','โฟลเซล','เชอรินโบ','เชอริม','คารานะคูชิ','ไทรโทดอน',
+'เอเทโบธ','ฟูวันเต','ฟูวาไรด์','มิมิโรล','มิมิล็อป','มูมาจิ','ดอนคาราซึ','เนียรุมา','บูเนียตโตะ',
+'ลีชาน','สกังพู','สกาแทงค์','โดมิเรอร์','โดทาคุน','อุโซฮาจิ','มาเนเน','พินพูคุ','เพแรป','มิคารูเกะ',
+'ฟุคามารุ','กาไบต์','กาเบรียส','กอนเบะ','ริโอลุ','ลูคาริโอ','ฮิปโปโปตัส','คาบัลดอน','สกอร์ปี',
+'โดราเปียน','กูเรกกรู','โดคูร็อก','มัสคิปปา','เคโคโอ','เนโอแลนท์','ทาแมนทา','ยูกิคาบูริ','ยูกิโนะโอ',
+'มานิวลา','จิบะคอยล์','เบโรเบลท์','โดไซดอน','โมจัมโบ','เอเลคิเบิล','บูเบิร์น','โทเกคิส','เมกะยันมา',
+'ลีเฟีย','กราเซีย','ไกลออน','แมมมู','โพรีกอน แซด','เอรูเรโด','ไดโนซ','โยนัวร์','ยูกิเมโนโกะ','โรตอม',
+'ยุคซี','เอ็มริต','อักนอม','ดีอัลกา','พัลเกีย','ฮีดราน','เรจิกิกัส','กิราตินา','เครเซเลีย','ฟีโอเน',
+'มานาฟี','ดาร์กไร','เชมิน','อาร์เซอุส'],
+
+                unova: ['วิคทินี','สึทาจะ','จาโนวี','จาโลดา','โพคาบู','จาโอบู','เอ็นบูโอ','มิจูมารุ','ฟุตาจิมารุ','ไดเคนคิ',
+'มิเนซูมิ','มิรูฮอก','โยเทอรี','เฮอเดอเรีย','มูแลนด์','โจโรเนโกะ','เลพัลดัส','ยานัปปุ','ยานักกี',
+'บาอปปุ','บาอกกี','ฮิยัปปุ','ฮิยักกี','มุนนะ','มุชานา','มาเมพาโตะ','ฮาโทโบ','เคนโฮโล','ชิมามา',
+'ซีบรายกา','ดันโกโร','กันเทิล','กิไกอาซ','โคโรโมริ','โคโคโรโมริ','โมกุริว','โดริวซึ','ทาบุนเนะ',
+'ด็อคโคเรอร์','โดเท็คคทซึ','โรบูชิน','โอทามาโร','กามาการุ','กามาเกโรเกะ','นาเกคิ','ดาเกคิ','คูรูมีรุ',
+'คูรูมายุ','ฮาฮาโคโมริ','ฟูชิเดะ','วีกา','เพนโดรา','โมนเมน','เอลฟูน','จูริเน','เดรเดีย','บาสราโอ',
+'เมะกุโรโกะ','วารุวิล','วารุเวียล','ดารุมักกะ','ฮิฮิดารุมะ','มาราคัจจิ','อิชิซึไม','อิวาพาเลซ',
+'ซึรุกกุ','ซึรุซึคิน','ซิมโบลา','เดธมาส','เดธคาน','โปรโตกา','อบาโกรา','อาเคน','อาเคโอส','ยาบุคุรอน',
+'ดัสต์ดาส','โซรัว','โซโรอาร์ค','จิลามี','จิลาจีโน','โกธิมู','โกธิมิรุ','โกธิรูเซล','ยูนิรัน','ดาบูลัน',
+'แลนคูลัส','โคอารูฮี','สวอนนา','วานิเพ็ตติ','วานิริช','ไบวานิลลา','ชิคิจิกะ','เมบูคิจิกะ','เอมอนกา',
+'คาบูรูโมะ','ชูวัลโก','ทามาเกะทาเคะ','โมโรบาเรรุ','พูรูริล','บูรุนเจล','มามันโบ','บาชูรุ','เดนทูลา',
+'เทสซีด','นัทเทรย์','เกียร์','กิเกียร์','กิกิเกียร์','ชิบิชิราซึ','ชิบิบีล','ชิบิรูดอน','ลีเกรย์',
+'โอเบ็ม','ฮิโตโมชิ','แลมพูลา','แชนเดลา','คิบาโกะ','โอโนนโดะ','โอโนโนคุส','คูมะชุน','ทันแบร์','ฟรีจิโอ',
+'โชโบมากิ','อกิลดา','มักเกียว','โคโจฟู','โคโจนโดะ','คริมแกน','โกบิท','โกลูก','โคมาทานา','คิริคิซัน',
+'บัฟฟรอน','วาชิบอน','วอร์เกิล','วัลไจ','วัลจีนา','คุยทาแรน','ไอแอนท์','โมโนซึ','จิเฮด','ซาซันดรา',
+'เมลาร์วา','อุลกามอธ','โคบัลออน','เทราคิออน','วิริซิออน','ทอร์เนลอส','โวลโทลอส','เรชิรัม','เซครอม',
+'แลนโดลอส','คิวเรม','เคลดิโอ','เมโลเอตตา','เกโนเซ็กท์'],
+
+                kalos: ['ฮาริมารอน','ฮาริบอร์ก','บริการอน','ฟ็อกโกะ','เทลนาร์','มาฟ็อกซี','เคโรมัตซึ','เกโคกาชิระ','เก็คโคกะ',
+'โฮรุบี','โฮรูโด','ยายาโคมะ','ฮิโนยาโคมะ','ไฟร์แอโรว์','โคฟูคิมูชิ','โคฟูไร','วิวิญอง','ชิชิโกะ',
+'คาเอ็นจิชิ','ฟลาเบเบ','ฟลาเอตเต','ฟลาเจส','เมเคิล','โกโกท','ยันชัม','โกรอนดะ','ทริมเมียน',
+'เนียสเปอร์','เนียโอนิกซ์','ฮิโตทซึกิ','นิดังกิล','กิลการ์ด','ชูชูป','เฟรฟุวัน','เพร็อพพัฟ','เพโรรีม',
+'มาอีกะ','คาลามาเนโร','คาเมเทเทะ','กาเมโนเดส','คูซูโม','ดรามิโดโร','อุเด็ปโป','บลอสเตอร์','เอลิคิเทล',
+'เอเลซาร์ด','จิโกรัส','กาจิโกรัส','อมารุส','อมารูรูกา','นิมเฟีย','ลูจาบูล','เดเด็นเนะ','เมเลซี','นูเมรา',
+'นูเมล','นูเมลกอน','เคลฟฟี','โบคุเร','โอร็อต','บาเค็จจะ','พัมพ์จิน','คาจิคอล','เครเบส','ออนแบท',
+'ออนเวิร์น','เซอเนียส','อีเวลทอล','ซีการ์ด','ดีแอนซี','ฮูปา','โวลเคเนียน'],
+
+                alola: ['โมคุโร','ฟุคุซึโร','จูไนเปอร์','เนียบี','เนียฮีท','กาโอกาเอ็น','อชิมาริ','โอชามาริ','อชิเรน',
+'สึสึเคระ','เครารัปปา','โดเดคาบาชิ','ยังกูส','เดคากูส','อโกจิมูชิ','เด็นจิมูชิ','คุวากานอน',
+'มาเค็นคานิ','เคเค็นคานิ','โอโดริโดริ','อบูรี','อบูริบง','อิวังโค','ลูกาลูกัน','โยวาชิ','ฮิโดอิเดะ',
+'โดฮิโดอิเดะ','โดโรบังโค','บัมบะโดโร','ชิซึคุโม','โอนิชิซึคุโม','คาริคิริ','รารันเทส','เนมาชู',
+'มาเชโดะ','ยาโทโมริ','เอ็นนิวท์','นุยโคกุมะ','คิเทรุกุมะ','อมาคาจิ','อมามาอิโกะ','อมาโจ','คิววะวา',
+'ยาเรยูตัน','นาเกสึเคซารุ','โคโซคูมูชิ','กูโซคูมูฉะ','ซึนาบา','ชิโรเดซึนะ','นามาโคบูชิ','ไทป์: นัล',
+'ซิลวาดี','เมเทโน','เน็คโคอาลา','บาคุกาเมส','โทเกะเดมารุ','มิมิคคิว','ฮากิกิชิริ','จิจีลอน',
+'ดาดาริน','จาราโค','จารังโก','จารารังกา','คาปู โคเคโค','คาปู เทเทฟู','คาปู บูลูลู','คาปู เรฮิเร',
+'คอสม็อก','คอสโมม','โซลกาเลโอ','ลูนาอาลา','อุทซึรอยด์','มัสชิบูน','เฟโรเช','เด็นจูโมคุ','เท็คคากูยะ',
+'คามิทซึรูกิ','อคูจิคิง','เนครอสมา','มาเกียนา','มาร์ชาโดว์','เบเวนอม','อาโกโยง','สึนเดะสึนเดะ',
+'ซุกะโด้ง','เซราโอรา','เมลตัน','เมลเมทัล'],
+
+                galar: ['ซารุโนริ','บาจินคิ','กอริลลันดา','ฮิบานี','แรบบิฟุต','เอสเบิร์น','เมซซอน','จิเมเลียน','อินเทเลียน',
+'โฮชิกะริสึ','โยคุบะริสึ','โคโคการะ','อาโอการาสึ','อาร์เมอร์การ์','ซัจจิมุชิ','เรโดมุชิ','อิออร์บ',
+'คุสุเนะ','ฟ็อกสไล','ฮิเมงกะ','วาตะชิรากะ','วูลู','ไบวูลู','คามุคาเมะ','คาจิริกาเมะ','วันปาจิ',
+'พัลส์วัน','ทันด้ง','โทร็อกกอน','เซคิทันซัง','คาจิชชู','แอปปริว','ทารุปเปิล','ซึนะเฮบิ','ซาไดจา',
+'อุ๊อุ','ซาชิคามาสึ','คามาสึโจ','เอเลซัน','สตรินเดอร์','ยาคุเดะ','มารุยาคุเดะ','ทาทักโกะ','โอโทสพัส',
+'ยาบาฉะ','พอตเดธ','มิบริม','เทบริม','บริมออน','เบโรบา','กิโม','โอลองเกะ','ทาจิฟุซากุมะ','เนียคิง',
+'ซานิกอน','เนกิกะไนท์','บาริโคโอรุ','เดธบาน','มาโฮมิล','มาวิป','ไทเรสึ','บาจินอุนิ','ยูกิฮามิ',
+'มอสโนว์','อิชิเฮนจิน','โคโอริปโปะ','อิเอซซัน','โมรุเปโกะ','โซโด','ไดโอโด','พัจจิรากอน','พัจจิรุดอน',
+'อุโอโนรากอน','อุโอจิรุดอน','ดิวรัลดอน','โดราเมชิยะ','โดรอนจิ','โดราพัลท์','ซาเชียน','ซามาเซนตา',
+'มุเก็นไดนา','ดาคุมะ','วูลาออส','ซารู้ด','เรจิเอเลคิ','เรจิดราโก','บลิซซาพอส','เรสพอส','บัดเดร็กซ์',
+'อายาชิชิ','บาซากิริ','กาจิกุมะ','อิไดโต','โอนิวลา','ฮารีมัน','เลิฟโทลอส'],
+
+                paldea: ['เนียวฮะ','เนียโรเต','มาสเคอเนีย','โฮเกเตอร์','อาจิเกเตอร์','ลาวด์โบน','แคว็กซ์','เวลคาโมะ','เวนิวัล','กูร์ตง',
+'เพอร์ฟูตง','ทามันทูล่า','วาไนเดอร์','มาเมะบัตตะ','เอ็กซ์เลก','พาโม','พาม็อต','เพอร์ม็อต','วักคาเนซูมิ','อิกคาเนซูมิ',
+'พาปิม็อตจิ','บัลซ์เซล','มินีฟ','โอลีเนียว','โอลีวา','อิคิริงโกะ','โคจีโอ','จีโอซึมู','เคียวจีโอน','คาร์โบ','กุเร็นอาร์มา',
+'โซเบลดส์','ซุพีคา','ฮาราบารี','ไคเด็น','ไทไคเด็น','โอราทิฟ','มาฟีทิฟ','ชิรุชูลู','ทากิงกูลู','อาโนะคุสะ','อาโนะโฮรากุสะ',
+'โนโนะคุราเกะ','ริคุคุราเกะ','กาเคกานิ','แคปไซจิ','สโกวิลเลิน','ชิกาโรโค','เบราคาสุ','ฮิราฮินะ','เควสพัตรา','คานุจัง',
+'นาคานุจัง','เดคานุจัง','อุมิดิกดา','อุมิทริโอ','โอโตชิโดริ','นามิอิรุกะ','อิรุกะแมน','โบรรอน','โบรโรโรม','โมโตโทคาเงะ',
+'มิมิซึซึ','คิราเมะ','คิราฟลอร์','โบจิ','ฮากาด็อก','คลามิงโก้','อารุคุจิระ','ฮัลค์จิระ','มิกาลูซา','เฮย์รัชเชอร์','ชาริทัตสึ',
+'โคโนะโยซารุ','โดะโอ','ริกิคิริน','โนโกก็อจจิ','โดโดเกซัน','งายักษ์','หางตะเบ็ง','เห็ดคลุ้มคลั่ง','เกศากระพือ','ปีกไล้พสุธา',
+'ขนทราย','รอยล้อเหล็ก','ถุงเหล็ก','มือเหล็ก','คอเหล็ก','แมลงมอธเหล็ก','หนามเหล็ก','เซบิเอะ','เซโกล','เซเกลฟ','คอลเลคเรย์',
+'ซาร์ฟโก','ฉงเจี่ยน','เป้าเจี้ยน','ติ่งลู่','อวี้อวี๋','จันทร์คำรน','นักรบเหล็ก','โคไรดอน','มิไรดอน','คลื่นน้ำกระเผื่อม','ใบด่างเหล็ก',
+'คามิชชู','ฉะเดธ','ยาบะโซฉะ','อีเนะอินุ','มาชิมาชิระ','คิจิคิกิซุ','โอกาปอง','บริดูรัส','คามิสึโอโรจิ','เพลิงทะลวง','ฟ้าคะนองคลั่ง',
+'ศิลาเหล็ก','หัวเหล็ก','เทราปากอส','โมโมวาโร่']
+            };
+
+            // ตรวจสอบหากมีพารามิเตอร์ region บน URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const regionParam = urlParams.get('region');
+            
+            if (regionParam && pokemonData[regionParam]) {
+                document.getElementById("regionSelect").value = regionParam;
+                loadPokemonList(regionParam);
+                document.getElementById("regionHeader").style.display = "block";
+                document.getElementById("regionActions").style.display = "flex";
+            }
+
+            document.getElementById("regionSelect").addEventListener("change", function () {
+                const region = this.value;
+                if (!region) {
+                    document.getElementById("regionHeader").style.display = "none";
+                    document.getElementById("regionActions").style.display = "none";
+                    document.getElementById("pokemonList").innerHTML = "";
+                    return;
+                }
+
+                // อัปเดต URL
+                const newUrl = window.location.pathname + '?region=' + region;
+                window.history.pushState({}, '', newUrl);
+
+                // แสดงชื่อภูมิภาค
+                document.getElementById("regionTitle").innerText = "โปเกมอนในภูมิภาค" + regionNames[region];
+                document.getElementById("regionHeader").style.display = "block";
+                document.getElementById("regionActions").style.display = "flex";
+                loadPokemonList(region);
+            });
+            
+            // เพิ่ม Event Listener สำหรับปุ่มรีเซตภูมิภาค
+            document.getElementById("resetRegionBtn").addEventListener("click", function() {
+                const region = document.getElementById("regionSelect").value;
+                if (!region) {
+                    alert("กรุณาเลือกภูมิภาคก่อน");
+                    return;
+                }
+                
+                if (confirm(`คุณแน่ใจหรือไม่ที่จะรีเซตข้อมูลภูมิภาค ${regionNames[region]}?`)) {
+                    // ลบข้อมูลการจับโปเกมอนในภูมิภาคที่เลือก
+                    for (let i = 1; i <= pokemonData[region].total; i++) {
+                        localStorage.removeItem(`pokemon_${region}_${i}`);
+                    }
+                    
+                    loadPokemonList(region);
+                    updateCount();
+                }
+            });
+            
+            // เพิ่ม Event Listener สำหรับปุ่มเลือกทั้งหมด/ยกเลิกทั้งหมด
+            document.getElementById("checkAllBtn").addEventListener("click", function() {
+                const region = document.getElementById("regionSelect").value;
+                if (!region) {
+                    alert("กรุณาเลือกภูมิภาคก่อน");
+                    return;
+                }
+                
+                toggleAllCheckboxes(region, true);
+            });
+            
+            document.getElementById("uncheckAllBtn").addEventListener("click", function() {
+                const region = document.getElementById("regionSelect").value;
+                if (!region) {
+                    alert("กรุณาเลือกภูมิภาคก่อน");
+                    return;
+                }
+                
+                toggleAllCheckboxes(region, false);
+            });
+
+            function toggleAllCheckboxes(region, checked) {
+                const checkboxes = document.querySelectorAll(`input[type=checkbox][data-region='${region}']`);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = checked;
+                    const index = checkbox.dataset.index;
+                    if (checked) {
+                        localStorage.setItem(`pokemon_${region}_${index}`, "caught");
+                        checkbox.closest('.pokemon-item').classList.add('caught');
+                    } else {
+                        localStorage.removeItem(`pokemon_${region}_${index}`);
+                        checkbox.closest('.pokemon-item').classList.remove('caught');
+                    }
+                });
+                updateCount();
+            }
+
+            function loadPokemonList(region) {
+                const listContainer = document.getElementById("pokemonList");
+                listContainer.innerHTML = "";
+                const data = pokemonData[region];
+
+                for (let i = 1; i <= data.total; i++) {
+                    const div = document.createElement("div");
+                    div.classList.add("pokemon-item");
+                    
+                    const img = document.createElement("img");
+                    img.src = `images/${region}_ (${i}).png`; // รูปโปเกมอน
+                    
+                    // ตั้งค่า alt text เป็นชื่อที่กำหนดเอง
+                    const pokemonName = pokemonNames[region] && pokemonNames[region][i-1] 
+                        ? pokemonNames[region][i-1] 
+                        : `${regionNames[region]} #${i}`;
+                    img.alt = pokemonName;
+                    
+                    img.classList.add("pokemon-img");
+                    
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.dataset.region = region;
+                    checkbox.dataset.index = i;
+                    checkbox.id = `pokemon_${region}_${i}`; // เพิ่ม ID ให้กับ checkbox
+                    checkbox.classList.add("pokemon-checkbox"); // เพิ่มคลาสให้กับ checkbox
+                    
+                    // ตรวจสอบว่าโปเกมอนตัวนี้ถูกจับไปแล้วหรือไม่
+                    if (localStorage.getItem(`pokemon_${region}_${i}`) === "caught") {
+                        checkbox.checked = true;
+                        div.classList.add('caught');
+                    }
+                    
+                    checkbox.addEventListener("change", function() {
+                        if (this.checked) {
+                            localStorage.setItem(`pokemon_${region}_${i}`, "caught");
+                            div.classList.add('caught');
+                        } else {
+                            localStorage.removeItem(`pokemon_${region}_${i}`);
+                            div.classList.remove('caught');
+                        }
+                        updateCount();
+                    });
+                    
+                    const label = document.createElement("label");
+                    label.innerText = pokemonName; // แก้ไขให้แสดงชื่อโปเกมอนแทน
+                    label.setAttribute("for", `pokemon_${region}_${i}`); // เชื่อมโยงกับ checkbox
+                    
+                    div.appendChild(img);
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
+                    listContainer.appendChild(div);
+                }
+                updateCount();
+            }
+
+            function updateCount() {
+                // นับจำนวนโปเกมอนที่จับได้ในแต่ละภูมิภาค
+                for (const region in pokemonData) {
+                    let regionCaught = 0;
+                    for (let i = 1; i <= pokemonData[region].total; i++) {
+                        if (localStorage.getItem(`pokemon_${region}_${i}`) === "caught") {
+                            regionCaught++;
+                        }
+                    }
+                    pokemonData[region].caught = regionCaught;
+                }
+                
+                // บันทึกข้อมูลลงใน localStorage
+                localStorage.setItem("pokemonData", JSON.stringify(pokemonData));
+                
+                // อัปเดตหน้าจอ
+                const selectedRegion = document.getElementById("regionSelect").value;
+                if (selectedRegion) {
+                    const regionData = pokemonData[selectedRegion];
+                    document.getElementById("pokemonCount").innerText = `จับได้แล้ว ${regionData.caught} / ${regionData.total} ตัว`;
+                    
+                    // อัปเดตแถบความก้าวหน้า
+                    const percent = Math.round((regionData.caught / regionData.total) * 100);
+                    document.getElementById("regionProgress").style.width = `${percent}%`;
+                }
+            }
+        });
+    </script>
+    <script src="js/data-management.js"></script>
+</body>
+</html>

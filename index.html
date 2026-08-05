@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าหลัก - เช็คลิสต์ Pokémon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image: url('https://assets.pokemon.com/static2/_ui/img/chrome/container_bg.png');
+            font-family: 'Prompt', sans-serif;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        nav {
+            background-color: #ee1515;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: #cc0000;
+        }
+        
+        h1 {
+            color: #3466af;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #3466af;
+            border-bottom: 2px solid #ffcb05;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .stats-summary {
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #3466af;
+        }
+        
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #3466af;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress {
+            background: linear-gradient(90deg, #ee1515, #3466af);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .actions-panel {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .action-btn {
+            background-color: #3466af;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s, background-color 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            background-color: #2a549a;
+        }
+        
+        .export-btn {
+            background-color: #4caf50;
+        }
+        
+        .import-btn {
+            background-color: #2196f3;
+        }
+        
+        .reset-btn {
+            background-color: #f44336;
+        }
+        
+        .icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        
+        #regionSummary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .region-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            border: 2px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .region-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #ffcb05;
+        }
+        
+        .region-card h3 {
+            color: #3466af;
+            margin-top: 0;
+            border-bottom: 2px solid #ffcb05;
+            padding-bottom: 8px;
+        }
+        
+        .region-card .progress-bar {
+            margin: 15px 0;
+        }
+        
+        .region-card a {
+            display: inline-block;
+            background-color: #3466af;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .region-card a:hover {
+            background-color: #2a549a;
+        }
+        
+        /* โลโก้โปเกมอน */
+        .pokemon-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .pokemon-logo img {
+            max-width: 250px;
+            height: auto;
+        }
+        
+        /* เพิ่มไอคอนโปเกบอล */
+        .pokeball-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        /* เพิ่มภาพพื้นหลังโปเกมอน */
+        .pokemon-background {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            opacity: 0.15;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">
+            <!--<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">-->
+        </div>
+        <div class="nav-links">
+            <a href="index.html">หน้าหลัก</a>
+            <a href="regions.html">ภูมิภาค</a>
+            <a href="about.html">เกี่ยวกับ</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="pokemon-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2560px-International_Pok%C3%A9mon_logo.svg.png" alt="Pokémon Logo">
+        </div>
+        
+        <h1>เช็คลิสต์ Pokémon</h1>
+        
+        <div class="stats-summary">
+            <p>จับได้แล้วทั้งหมด</p>
+            <div class="big-number"><span id="totalCaught">0</span> / <span id="totalPokemon">0</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="totalProgress" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="actions-panel">
+            <button id="exportBtn" class="action-btn export-btn">
+                <span class="icon">📤</span> Export ข้อมูล
+            </button>
+            <button id="importBtn" class="action-btn import-btn">
+                <span class="icon">📥</span> Import ข้อมูล
+            </button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+            <button id="resetAllBtn" class="action-btn reset-btn">
+                <span class="icon">🗑️</span> รีเซตข้อมูลทั้งหมด
+            </button>
+			<button id="downloadImgBtn" class="action-btn" style="background-color: #9c27b0;">
+				<span class="icon">📸</span> Download รูปภาพ
+			</button>
+        </div>
+		
+		<!-- เพิ่ม modal สำหรับกรอกชื่อ -->
+<div id="nameModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <h3 style="color: #3466af; margin-top: 0;">กรุณาใส่ชื่อของคุณ</h3>
+        <input type="text" id="trainerName" style="width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #3466af; border-radius: 5px; font-size: 16px;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+            <button id="cancelNameBtn" style="padding: 8px 15px; border: none; border-radius: 5px; background-color: #f44336; color: white; cursor: pointer;">ยกเลิก</button>
+            <button id="confirmNameBtn" style="padding: 8px 15px; border: none; border-radius: 5px; background-color: #3466af; color: white; cursor: pointer;">ยืนยัน</button>
+        </div>
+    </div>
+</div>
+
+<!-- สร้าง Canvas ที่ซ่อนไว้สำหรับวาดรูปภาพ -->
+<canvas id="downloadCanvas" style="display: none;"></canvas>
+        
+        <h2>
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" class="pokeball-icon">
+            สรุปแต่ละภูมิภาค
+        </h2>
+        <div id="regionSummary">
+            <!-- ตัวอย่างการ์ดภูมิภาค (จะถูกสร้างโดย JavaScript) -->
+            <div class="region-card">
+                <h3>คันโต</h3>
+                <p>จับได้แล้ว: <strong>0/151</strong></p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+                <a href="regions.html?region=kanto">ดูรายละเอียด</a>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" class="pokemon-background" alt="Pikachu">
+            </div>
+            <div class="region-card">
+                <h3>โจโต</h3>
+                <p>จับได้แล้ว: <strong>0/100</strong></p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+                <a href="regions.html?region=johto">ดูรายละเอียด</a>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/172.png" class="pokemon-background" alt="Pichu">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const pokemonData = JSON.parse(localStorage.getItem("pokemonData")) || {
+                kanto: { total: 151, caught: 0 },
+                johto: { total: 100, caught: 0 },
+                hoenn: { total: 135, caught: 0 },
+                sinnoh: { total: 107, caught: 0 },
+                unova: { total: 156, caught: 0 },
+                kalos: { total: 72, caught: 0 },
+                alola: { total: 88, caught: 0 },
+                galar: { total: 96, caught: 0 },
+                paldea: { total: 120, caught: 0 }
+            };
+            
+            // รายชื่อโปเกมอนที่จะแสดงในแต่ละภูมิภาค
+            const regionMascots = {
+                kanto: 25,    // Pikachu
+                johto: 172,   // Pichu
+                hoenn: 254,   // Sceptile
+                sinnoh: 393,  // Piplup
+                unova: 494,   // Victini
+                kalos: 653,   // Fennekin
+                alola: 722,   // Rowlet
+                galar: 813,   // Scorbunny
+                paldea: 906   // Sprigatito
+            };
+            
+            // ชื่อภูมิภาคในภาษาไทย
+            const regionNames = {
+                kanto: "คันโต",
+                johto: "โจโต",
+                hoenn: "โฮเอ็น",
+                sinnoh: "ชินโอ",
+                unova: "ยูโนวา",
+                kalos: "คาลอส",
+                alola: "อโลลา",
+                galar: "กาลาร์",
+                paldea: "พัลเดีย"
+            };
+            
+            // สร้างการ์ดแสดงข้อมูลแต่ละภูมิภาค
+            const regionSummary = document.getElementById("regionSummary");
+            regionSummary.innerHTML = "";
+            
+            let totalPokemon = 0;
+            let totalCaught = 0;
+            
+            for (const region in pokemonData) {
+                const data = pokemonData[region];
+                totalPokemon += data.total;
+                totalCaught += data.caught;
+                
+                const percent = Math.round((data.caught / data.total) * 100);
+                
+                const regionCard = document.createElement("div");
+                regionCard.classList.add("region-card");
+                
+                regionCard.innerHTML = `
+                    <h3>${regionNames[region]}</h3>
+                    <p>จับได้แล้ว: <strong>${data.caught}/${data.total}</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${percent}%"></div>
+                    </div>
+                    <a href="regions.html?region=${region}">ดูรายละเอียด</a>
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${regionMascots[region]}.png" 
+                         class="pokemon-background" alt="Pokemon">
+                `;
+                
+                regionSummary.appendChild(regionCard);
+            }
+            
+            // อัปเดตข้อมูลรวม
+            document.getElementById("totalPokemon").textContent = totalPokemon;
+            document.getElementById("totalCaught").textContent = totalCaught;
+            
+            const totalPercent = Math.round((totalCaught / totalPokemon) * 100);
+            document.getElementById("totalProgress").style.width = `${totalPercent}%`;
+            
+            // เพิ่มการทำงานของปุ่ม Export ข้อมูล
+            document.getElementById("exportBtn").addEventListener("click", function() {
+                const exportData = {};
+                
+                // รวบรวมข้อมูลทั้งหมดจาก localStorage
+                for (const region in pokemonData) {
+                    exportData[region] = [];
+                    
+                    for (let i = 1; i <= pokemonData[region].total; i++) {
+                        if (localStorage.getItem(`pokemon_${region}_${i}`) === "caught") {
+                            exportData[region].push(i);
+                        }
+                    }
+                }
+                
+                // สร้างไฟล์ JSON สำหรับดาวน์โหลด
+                const dataStr = JSON.stringify(exportData);
+                const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+                
+                const exportLink = document.createElement("a");
+                exportLink.setAttribute("href", dataUri);
+                exportLink.setAttribute("download", "pokemon_checklist_export.json");
+                exportLink.click();
+            });
+            
+            // เพิ่มการทำงานของปุ่ม Import ข้อมูล
+            // document.getElementById("importBtn").addEventListener("click", function() {
+			//     document.getElementById("importFile").click();
+			// });
+            
+            document.getElementById("importFile").addEventListener("change", function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        // ล้างข้อมูลเดิม
+                        for (const region in pokemonData) {
+                            for (let i = 1; i <= pokemonData[region].total; i++) {
+                                localStorage.removeItem(`pokemon_${region}_${i}`);
+                            }
+                        }
+                        
+                        // นำเข้าข้อมูลใหม่
+                        for (const region in importData) {
+                            if (pokemonData[region]) {
+                                importData[region].forEach(pokemonId => {
+                                    localStorage.setItem(`pokemon_${region}_${pokemonId}`, "caught");
+                                });
+                            }
+                        }
+                        
+                        alert("นำเข้าข้อมูลสำเร็จ! กำลังรีเฟรชหน้า...");
+                        location.reload();
+                    } catch (error) {
+                        alert("เกิดข้อผิดพลาดในการนำเข้าข้อมูล: " + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            });
+            
+            // เพิ่มการทำงานของปุ่มรีเซตข้อมูลทั้งหมด
+            document.getElementById("resetAllBtn").addEventListener("click", function() {
+                if (confirm("คุณแน่ใจหรือไม่ที่จะรีเซตข้อมูลทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้!")) {
+                    // ลบข้อมูลทั้งหมดที่เกี่ยวข้องกับโปเกมอน
+                    for (const region in pokemonData) {
+                        for (let i = 1; i <= pokemonData[region].total; i++) {
+                            localStorage.removeItem(`pokemon_${region}_${i}`);
+                        }
+                    }
+                    
+                    // รีเซตข้อมูลสรุป
+                    localStorage.setItem("pokemonData", JSON.stringify({
+                        kanto: { total: 151, caught: 0 },
+                        johto: { total: 100, caught: 0 },
+                        hoenn: { total: 135, caught: 0 },
+                        sinnoh: { total: 107, caught: 0 },
+                        unova: { total: 156, caught: 0 },
+                        kalos: { total: 72, caught: 0 },
+                        alola: { total: 88, caught: 0 },
+                        galar: { total: 96, caught: 0 },
+                        paldea: { total: 120, caught: 0 }
+                    }));
+                    
+                    alert("รีเซตข้อมูลเรียบร้อยแล้ว! กำลังรีเฟรชหน้า...");
+                    location.reload();
+                }
+            });
+			
+			    // เพิ่มการทำงานของปุ่ม Download รูปภาพ
+    document.getElementById("downloadImgBtn").addEventListener("click", function() {
+        // แสดง modal สำหรับกรอกชื่อ
+        document.getElementById("nameModal").style.display = "block";
+    });
+    
+    // เพิ่มการทำงานของปุ่มยกเลิกใน modal
+    document.getElementById("cancelNameBtn").addEventListener("click", function() {
+        document.getElementById("nameModal").style.display = "none";
+    });
+    
+    // เพิ่มการทำงานของปุ่มยืนยันใน modal
+document.getElementById("confirmNameBtn").addEventListener("click", function() {
+    const trainerName = document.getElementById("trainerName").value.trim();
+    
+    if (trainerName) {
+        // ซ่อน modal
+        document.getElementById("nameModal").style.display = "none";
+        
+        // โหลดฟอนต์ Prompt ก่อนวาดรูปภาพ
+        loadPromptFont(function() {
+            // สร้างรูปภาพและดาวน์โหลด
+            createPokemonImage(trainerName);
+        });
+    } else {
+        alert("กรุณาใส่ชื่อของคุณ");
+    }
+});
+    
+// ฟังก์ชันสำหรับสร้างรูปภาพและดาวน์โหลด
+function createPokemonImage(trainerName) {
+    const canvas = document.getElementById("downloadCanvas");
+    const ctx = canvas.getContext("2d");
+    
+    // กำหนดขนาด
+    canvas.width = 800;
+    canvas.height = 600;
+    
+    // เตรียมข้อมูล
+    let totalPokemon = 0;
+    let totalCaught = 0;
+    
+    for (const region in pokemonData) {
+        totalPokemon += pokemonData[region].total;
+        totalCaught += pokemonData[region].caught;
+    }
+    
+    const totalPercent = Math.round((totalCaught / totalPokemon) * 100);
+    
+    // วาดพื้นหลัง
+    ctx.fillStyle = "#f5f5f5";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // วาดพื้นที่หลัก
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(20, 20, canvas.width - 40, canvas.height - 40);
+    
+    // วาดเส้นขอบ
+    ctx.strokeStyle = "#3466af";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+    
+    // วาดส่วนหัว
+    const headerGradient = ctx.createLinearGradient(20, 20, 20, 100);
+    headerGradient.addColorStop(0, "#3466af");
+    headerGradient.addColorStop(1, "#2a549a");
+    ctx.fillStyle = headerGradient;
+    ctx.fillRect(20, 20, canvas.width - 40, 80);
+    
+    // วาดโลโก้
+    ctx.fillStyle = "#ffcb05";
+    ctx.font = "bold 36px 'Prompt', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Pokémon Checklist", canvas.width / 2, 70);
+    
+    // วาดชื่อเทรนเนอร์
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "20px 'Prompt', sans-serif";
+    ctx.fillText("เทรนเนอร์: " + trainerName, canvas.width / 2, 95);
+    
+    // วาดสถิติรวม
+    ctx.fillStyle = "#3466af";
+    ctx.font = "bold 28px 'Prompt', sans-serif";
+    ctx.fillText(`จับได้แล้วทั้งหมด: ${totalCaught} / ${totalPokemon} (${totalPercent}%)`, canvas.width / 2, 150);
+    
+    // วาดแถบความคืบหน้า
+    const progressBarWidth = 600;
+    const progressBarHeight = 30;
+    const progressBarX = (canvas.width - progressBarWidth) / 2;
+    const progressBarY = 180;
+    
+    // วาดพื้นหลังแถบความคืบหน้า
+    ctx.fillStyle = "#e0e0e0";
+    ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+    
+    // วาดแถบความคืบหน้า
+    const progressWidth = (totalCaught / totalPokemon) * progressBarWidth;
+    const progressGradient = ctx.createLinearGradient(progressBarX, 0, progressBarX + progressWidth, 0);
+    progressGradient.addColorStop(0, "#ee1515");
+    progressGradient.addColorStop(1, "#3466af");
+    ctx.fillStyle = progressGradient;
+    ctx.fillRect(progressBarX, progressBarY, progressWidth, progressBarHeight);
+    
+    // วาดเส้นขอบแถบความคืบหน้า
+    ctx.strokeStyle = "#333333";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+    
+    // วาดข้อมูลแต่ละภูมิภาค
+    ctx.fillStyle = "#333333";
+    ctx.font = "bold 24px 'Prompt', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("สรุปแต่ละภูมิภาค", canvas.width / 2, 250);
+    
+    // วาดตารางข้อมูล
+    const tableX = 100;
+    let tableY = 280;
+    const rowHeight = 28; // เพิ่มความสูงของแถว
+    const colWidth = [300, 150, 150];
+    const tableWidth = colWidth[0] + colWidth[1] + colWidth[2];
+    
+    // วาดพื้นหลังตาราง
+    ctx.fillStyle = "#f0f8ff";
+    ctx.fillRect(tableX, tableY, tableWidth, rowHeight * 10);
+    ctx.strokeStyle = "#3466af";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(tableX, tableY, tableWidth, rowHeight * 10);
+    
+    // วาดหัวตาราง
+    const headerGradient2 = ctx.createLinearGradient(tableX, tableY, tableX, tableY + rowHeight);
+    headerGradient2.addColorStop(0, "#3466af");
+    headerGradient2.addColorStop(1, "#2a549a");
+    ctx.fillStyle = headerGradient2;
+    ctx.fillRect(tableX, tableY, tableWidth, rowHeight);
+    
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 20px 'Prompt', sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("ภูมิภาค", tableX + 10, tableY + rowHeight - 8);
+    
+    ctx.textAlign = "center";
+    ctx.fillText("จับได้แล้ว", tableX + colWidth[0] + colWidth[1]/2, tableY + rowHeight - 8);
+    ctx.fillText("เปอร์เซ็นต์", tableX + colWidth[0] + colWidth[1] + colWidth[2]/2, tableY + rowHeight - 8);
+    
+    // วาดเส้นตั้งของตาราง
+    ctx.beginPath();
+    ctx.moveTo(tableX + colWidth[0], tableY);
+    ctx.lineTo(tableX + colWidth[0], tableY + rowHeight * 10);
+    ctx.moveTo(tableX + colWidth[0] + colWidth[1], tableY);
+    ctx.lineTo(tableX + colWidth[0] + colWidth[1], tableY + rowHeight * 10);
+    ctx.strokeStyle = "#3466af";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    tableY += rowHeight;
+        
+    // วาดข้อมูลแต่ละภูมิภาค
+    ctx.font = "18px 'Prompt', sans-serif";
+    let rowCount = 0;
+    
+    const regionNames = {
+        kanto: "คันโต",
+        johto: "โจโต",
+        hoenn: "โฮเอ็น",
+        sinnoh: "ชินโอ",
+        unova: "ยูโนวา",
+        kalos: "คาลอส",
+        alola: "อโลลา",
+        galar: "กาลาร์",
+        paldea: "พัลเดีย"
+    };
+    
+    for (const region in pokemonData) {
+        const data = pokemonData[region];
+        const percent = Math.round((data.caught / data.total) * 100);
+        
+        // สลับสีพื้นหลังของแถว
+        if (rowCount % 2 === 0) {
+            ctx.fillStyle = "#f0f8ff";
+        } else {
+            ctx.fillStyle = "#ffffff";
+        }
+        
+        ctx.fillRect(tableX, tableY, tableWidth, rowHeight);
+        
+        // วาดข้อมูล
+        ctx.fillStyle = "#333333";
+        ctx.textAlign = "left";
+        ctx.fillText(regionNames[region], tableX + 10, tableY + rowHeight - 10);
+        
+        ctx.textAlign = "center";
+        ctx.fillText(`${data.caught} / ${data.total}`, tableX + colWidth[0] + colWidth[1]/2, tableY + rowHeight - 10);
+        
+        // วาดสีแสดงเปอร์เซ็นต์
+        let percentColor;
+        if (percent < 30) {
+            percentColor = "#f44336"; // สีแดง
+        } else if (percent < 70) {
+            percentColor = "#ff9800"; // สีส้ม
+        } else {
+            percentColor = "#4caf50"; // สีเขียว
+        }
+        
+        ctx.fillStyle = percentColor;
+        ctx.fillText(`${percent}%`, tableX + colWidth[0] + colWidth[1] + colWidth[2]/2, tableY + rowHeight - 10);
+        
+        // วาดเส้นแถว
+        ctx.beginPath();
+        ctx.moveTo(tableX, tableY + rowHeight);
+        ctx.lineTo(tableX + tableWidth, tableY + rowHeight);
+        ctx.strokeStyle = "#e0e0e0";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        tableY += rowHeight;
+        rowCount++;
+    }
+    
+    // วาดข้อมูลเพิ่มเติม
+    ctx.fillStyle = "#555555";
+    ctx.font = "italic 12px 'Prompt', sans-serif";
+    ctx.textAlign = "center";
+    const date = new Date();
+    ctx.fillText(`Generated on: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`, canvas.width / 2, canvas.height - 27);
+    
+    // วาดสัญลักษณ์โปเกบอล
+    drawPokeball(ctx, 60, 60, 30);
+    drawPokeball(ctx, canvas.width - 60, 60, 30);
+    
+    // แปลงเป็นรูปภาพและดาวน์โหลด
+    const imgData = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = imgData;
+    link.download = `pokemon_checklist_${trainerName}.png`;
+    link.click();
+}
+
+// ฟังก์ชันวาดโปเกบอล
+function drawPokeball(ctx, x, y, radius) {
+    // วงกลมด้านนอก
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "#333333";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // เส้นแบ่งกลาง (วาดก่อนครึ่งวงกลมเพื่อให้ขอบสีดำอยู่บนสุด)
+    ctx.beginPath();
+    ctx.moveTo(x - radius, y);
+    ctx.lineTo(x + radius, y);
+    ctx.strokeStyle = "#333333";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // ครึ่งบนสีแดง (วาดหลังเส้นแบ่งกลาง)
+    ctx.beginPath();
+    ctx.arc(x, y, radius, Math.PI, 0); // วาดจากมุม Math.PI ถึง 0
+    ctx.fillStyle = "#ee1515";
+    ctx.fill();
+    
+    // วงกลมตรงกลาง
+    ctx.beginPath();
+    ctx.arc(x, y, radius / 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "#333333";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // จุดตรงกลาง
+    ctx.beginPath();
+    ctx.arc(x, y, radius / 5, 0, Math.PI * 2);
+    ctx.fillStyle = "#333333";
+    ctx.fill();
+}
+
+
+// ฟังก์ชันเพื่อโหลดฟอนต์ Prompt ก่อนวาดรูปภาพ
+function loadPromptFont(callback) {
+    // ตรวจสอบว่าฟอนต์ Prompt ถูกโหลดหรือไม่
+    if (document.fonts && document.fonts.check('16px Prompt')) {
+        callback();
+        return;
+    }
+    
+    // โหลดฟอนต์ Prompt
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    
+    // ตรวจสอบว่าฟอนต์ถูกโหลดแล้วหรือไม่
+    if (document.fonts) {
+        document.fonts.ready.then(callback);
+    } else {
+        // ถ้าไม่รองรับ document.fonts ให้รอเล็กน้อยแล้วทำงานต่อ
+        setTimeout(callback, 1000);
+    }
+}
+        });
+    </script>
+    <script src="js/data-management.js"></script>
+</body>
+</html>
